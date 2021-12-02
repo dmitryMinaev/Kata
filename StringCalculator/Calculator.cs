@@ -6,9 +6,6 @@ namespace StringCalculator
 {
     public class Calculator
     {
-        private List<char> delimitersChar = new List<char>();
-        private List<string> delimitersString = new List<string>();
-
         public int Add(string numbers)
         {
             if (numbers == String.Empty)
@@ -16,8 +13,10 @@ namespace StringCalculator
                 return 0;
             }
 
-            int startIndex = FindDelimiters(numbers);
-            IEnumerable<int> querySum = ConvertString(numbers, startIndex);
+            (int, string) tuple = FindDelimiters(numbers);
+
+            numbers = numbers.Substring(tuple.Item1);
+            IEnumerable<int> querySum = ConvertString(numbers, tuple.Item2);
 
             string message = String.Empty;
 
@@ -27,9 +26,10 @@ namespace StringCalculator
             return querySum.Sum();
         }
 
-        private int FindDelimiters(string numbers)
+        private (int startIndex, string delimiters) FindDelimiters(string numbers)
         {
             int startIndex = 0;
+            string delimiters = String.Empty;
 
             if (numbers.StartsWith("//["))
             {
@@ -38,20 +38,9 @@ namespace StringCalculator
                 {
                     if (numbers[i++] == '[')
                     {
-                        string temp = String.Empty;
                         while (numbers[i] != ']')
                         {
-                            temp += numbers[i];
-                            i++;
-                        }
-
-                        if (temp.Length < 1)
-                        {
-                            delimitersChar.Add(Convert.ToChar(temp));
-                        }
-                        else
-                        {
-                            delimitersString.Add(temp);
+                            delimiters += numbers[i++];
                         }
                     }
 
@@ -60,32 +49,35 @@ namespace StringCalculator
                     {
                         break;
                     }
+
+                    delimiters += ' ';
                 }
 
                 startIndex = i;
             }
             else if (numbers.StartsWith("//"))
             {
-                delimitersChar.Add(numbers[2]);
-                startIndex = 4;
+                return (4, numbers[2].ToString());
             }
 
-            return startIndex;
+            return (startIndex, delimiters);
         }
 
-        private IEnumerable<int> ConvertString(string numbers, int startIndex)
+        private IEnumerable<int> ConvertString(string numbers, string delimiters)
         {
-            if (delimitersChar.Any())
+            if (delimiters == String.Empty)
             {
-                return numbers.Substring(startIndex).Split(delimitersChar.ToArray()).Select(n => Convert.ToInt32(n) < 1000 ? Convert.ToInt32(n) : 0);
+                return numbers.Split(',', '\n').Select(n => Convert.ToInt32(n) < 1000 ? Convert.ToInt32(n) : 0);
             }
-            else if (delimitersString.Any())
+
+            var arrDelimiters = delimiters.Split(' ');
+            if (arrDelimiters[0].Length == 1)
             {
-                return numbers.Substring(startIndex).Split(delimitersString.ToArray(), StringSplitOptions.None).Select(n => Convert.ToInt32(n) < 1000 ? Convert.ToInt32(n) : 0);
+                return numbers.Split(arrDelimiters.Select(n => Convert.ToChar(n)).ToArray()).Select(n => Convert.ToInt32(n) < 1000 ? Convert.ToInt32(n) : 0);
             }
             else
             {
-                return numbers.Split(',', '\n').Select(n => Convert.ToInt32(n) < 1000 ? Convert.ToInt32(n) : 0);
+                return numbers.Split(arrDelimiters, StringSplitOptions.None).Select(n => Convert.ToInt32(n) < 1000 ? Convert.ToInt32(n) : 0);
             }
         }
     }
