@@ -64,7 +64,7 @@ namespace StringCalculator.Tests
             TestDelegate actual = () => calculator.Add("-1\n-2, 1\n -6, 0");
             Exception ex = Assert.Throws<Exception>(actual);
 
-            Assert.AreEqual("negatives not allowed:-1-2-6", ex.Message);
+            Assert.AreEqual("Negatives not allowed: -1 -2 -6", ex.Message);
         }
 
         [Test]
@@ -77,7 +77,7 @@ namespace StringCalculator.Tests
         }
 
         [Test]
-        public void Add_BigDelimiters_ReturnsSumNumbers()
+        public void Add_DelimiterGreatOneLength_ReturnsSumNumbers()
         {
             var calculator = CreateDefaultCalculator();
 
@@ -95,7 +95,7 @@ namespace StringCalculator.Tests
         }
 
         [Test]
-        public void Add_BigSeveralDelimiters_ReturnsSumNumbers()
+        public void Add_SeveralDelimitersGreatOneLength_ReturnsSumNumbers()
         {
             var calculator = CreateDefaultCalculator();
 
