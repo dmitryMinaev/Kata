@@ -13,72 +13,67 @@ namespace StringCalculator
                 return 0;
             }
 
-            (int, string) tuple = FindDelimiters(numbers);
+            string delimiters = FindDelimiters(numbers) ?? ", \n";
 
-            numbers = numbers.Substring(tuple.Item1);
-            IEnumerable<int> querySum = ConvertString(numbers, tuple.Item2);
+            if (FindDelimiters(numbers) != null)
+            {
+                numbers = TruncateStringToNumbers(numbers);
+            }
 
-            string message = String.Empty;
+            IEnumerable<int> querySum = ConvertStringToNumbers(numbers, delimiters);
 
-            if (querySum.Where(n => n < 0).Select(n => message += n).Count() > 0)
-                throw new Exception(string.Format("negatives not allowed:{0}", message));
+            string messageException = string.Join(" ", querySum.Where(n => n < 0).Select(n => Convert.ToString(n)));
 
-            return querySum.Sum();
+            if (messageException != String.Empty)
+                throw new Exception(string.Format("Negatives not allowed: {0}",  messageException));
+
+            return querySum.Where(n => n < 1000).Sum();
         }
 
-        private (int startIndex, string delimiters) FindDelimiters(string numbers)
+        private string FindDelimiters(string numbers)
         {
-            int startIndex = 0;
             string delimiters = String.Empty;
 
             if (numbers.StartsWith("//["))
             {
-                int i = 0;
+                int count = numbers.IndexOf('[');
                 while (true)
                 {
-                    if (numbers[i++] == '[')
+                    if (numbers[count++] == '[')
                     {
-                        while (numbers[i] != ']')
+                        while (numbers[count] != ']')
                         {
-                            delimiters += numbers[i++];
+                            delimiters += numbers[count++];
                         }
                     }
 
-                    i++;
-                    if (numbers[i] == '\n')
+                    count++;
+                    if (numbers[count] == '\n')
                     {
                         break;
                     }
 
                     delimiters += ' ';
                 }
-
-                startIndex = i;
             }
             else if (numbers.StartsWith("//"))
             {
-                return (4, numbers[2].ToString());
+                const int startIndexDelimiters = 2;
+                return numbers.Substring(startIndexDelimiters, 1);
             }
 
-            return (startIndex, delimiters);
+            return delimiters == String.Empty ? null : delimiters;
         }
 
-        private IEnumerable<int> ConvertString(string numbers, string delimiters)
+        private string TruncateStringToNumbers(string numbers)
         {
-            if (delimiters == String.Empty)
-            {
-                return numbers.Split(',', '\n').Select(n => Convert.ToInt32(n) < 1000 ? Convert.ToInt32(n) : 0);
-            }
+            int startIndexNumber = numbers.IndexOf('\n');
+            return numbers.Substring(startIndexNumber);
+        }
 
-            var arrDelimiters = delimiters.Split(' ');
-            if (arrDelimiters[0].Length == 1)
-            {
-                return numbers.Split(arrDelimiters.Select(n => Convert.ToChar(n)).ToArray()).Select(n => Convert.ToInt32(n) < 1000 ? Convert.ToInt32(n) : 0);
-            }
-            else
-            {
-                return numbers.Split(arrDelimiters, StringSplitOptions.None).Select(n => Convert.ToInt32(n) < 1000 ? Convert.ToInt32(n) : 0);
-            }
+        private IEnumerable<int> ConvertStringToNumbers(string numbers, string delimiters)
+        {
+            return numbers.Split(delimiters.Split(' '), StringSplitOptions.None).Select(n => Convert.ToInt32(n));
         }
     }
 }
