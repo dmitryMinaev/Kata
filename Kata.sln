@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StringCalculator", "StringC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StringCalculator.Tests", "StringCalculator.Tests\StringCalculator.Tests.csproj", "{0363057A-2C49-43A5-8678-57C617E13249}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StringCalculator.ConsoleApp", "StringCalculator.ConsoleApp\StringCalculator.ConsoleApp.csproj", "{30416CAF-651B-4C02-B5EB-E4329FC66757}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StringCalculator.ConsoleApp.Tests", "StringCalculator.ConsoleApp.Tests\StringCalculator.ConsoleApp.Tests.csproj", "{59C18EEB-5583-46FF-AF5E-89EDA304FAEB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{0363057A-2C49-43A5-8678-57C617E13249}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0363057A-2C49-43A5-8678-57C617E13249}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0363057A-2C49-43A5-8678-57C617E13249}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30416CAF-651B-4C02-B5EB-E4329FC66757}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30416CAF-651B-4C02-B5EB-E4329FC66757}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30416CAF-651B-4C02-B5EB-E4329FC66757}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30416CAF-651B-4C02-B5EB-E4329FC66757}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59C18EEB-5583-46FF-AF5E-89EDA304FAEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59C18EEB-5583-46FF-AF5E-89EDA304FAEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59C18EEB-5583-46FF-AF5E-89EDA304FAEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59C18EEB-5583-46FF-AF5E-89EDA304FAEB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
