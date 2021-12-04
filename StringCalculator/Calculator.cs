@@ -8,7 +8,7 @@ namespace StringCalculator
     {
         public int Add(string numbers)
         {
-            if (numbers == String.Empty)
+            if (numbers == string.Empty)
             {
                 return 0;
             }
@@ -24,7 +24,7 @@ namespace StringCalculator
 
             string messageException = string.Join(" ", querySum.Where(n => n < 0).Select(n => Convert.ToString(n)));
 
-            if (messageException != String.Empty)
+            if (messageException != string.Empty)
                 throw new Exception(string.Format("Negatives not allowed: {0}",  messageException));
 
             return querySum.Where(n => n < 1000).Sum();
@@ -32,23 +32,27 @@ namespace StringCalculator
 
         private string FindDelimiters(string numbers)
         {
-            string delimiters = String.Empty;
+            string delimiters = string.Empty;
 
             if (numbers.StartsWith("//["))
             {
-                int count = numbers.IndexOf('[');
+                int startIndexDelimiters = 2;
+                int lengthDelimiters = numbers.IndexOf('\n');
+
+                numbers = numbers.Substring(startIndexDelimiters, lengthDelimiters);
+
+                int count = 0;
                 while (true)
                 {
                     if (numbers[count++] == '[')
                     {
-                        while (numbers[count] != ']')
+                        while (!(numbers[count] == ']' && (numbers[count + 1] == '\n' || numbers[count + 1] == '[')))
                         {
                             delimiters += numbers[count++];
                         }
                     }
-
-                    count++;
-                    if (numbers[count] == '\n')
+                    
+                    if (numbers[++count] == '\n')
                     {
                         break;
                     }
@@ -62,18 +66,18 @@ namespace StringCalculator
                 return numbers.Substring(startIndexDelimiters, 1);
             }
 
-            return delimiters == String.Empty ? null : delimiters;
+            return delimiters == string.Empty ? null : delimiters;
         }
 
         private string TruncateStringToNumbers(string numbers)
         {
-            int startIndexNumber = numbers.IndexOf('\n');
+            int startIndexNumber = numbers.IndexOf('\n') + 1;
             return numbers.Substring(startIndexNumber);
         }
 
         private IEnumerable<int> ConvertStringToNumbers(string numbers, string delimiters)
         {
-            return numbers.Split(delimiters.Split(' '), StringSplitOptions.None).Select(n => Convert.ToInt32(n));
+            return numbers.Split(delimiters.Split(' ').Reverse().ToArray(), StringSplitOptions.None).Select(n => Convert.ToInt32(n));
         }
     }
 }
