@@ -6,78 +6,87 @@ namespace StringCalculator
 {
     public class Calculator
     {
-        public int Add(string numbers)
+        public int Add(string inputString)
         {
-            if (numbers == string.Empty)
+            if (inputString == string.Empty)
             {
                 return 0;
             }
 
-            string delimiters = FindDelimiters(numbers) ?? ", \n";
+            List<string> customDelimiters = FindDelimiters(inputString);
 
-            if (FindDelimiters(numbers) != null)
+            string formatInputString = customDelimiters == null ? inputString : TruncateStringToNumbers(inputString);
+
+            List<string> delimiters = customDelimiters ?? new List<string>() { ",", @"\n" };
+
+            IEnumerable<int> numbers = ConvertStringToNumbers(formatInputString , delimiters);
+
+            if (numbers.Any(i => i < 0))
             {
-                numbers = TruncateStringToNumbers(numbers);
+                string messageException = string.Join(" ", numbers.Where(n => n < 0));
+
+                throw new Exception(string.Format("Negatives not allowed: {0}", messageException));
             }
 
-            IEnumerable<int> querySum = ConvertStringToNumbers(numbers, delimiters);
-
-            string messageException = string.Join(" ", querySum.Where(n => n < 0).Select(n => Convert.ToString(n)));
-
-            if (messageException != string.Empty)
-                throw new Exception(string.Format("Negatives not allowed: {0}",  messageException));
-
-            return querySum.Where(n => n < 1000).Sum();
+            return numbers.Where(n => n < 1000).Sum();
         }
 
-        private string FindDelimiters(string numbers)
+        private List<string> FindDelimiters(string inputString)
         {
-            string delimiters = string.Empty;
+            List<string> listDelimiters = null;
 
-            if (numbers.StartsWith("//["))
+            if (inputString.StartsWith("//["))
             {
-                int startIndexDelimiters = 2;
-                int lengthDelimiters = numbers.IndexOf('\n');
+                listDelimiters = new List<string>();
 
-                numbers = numbers.Substring(startIndexDelimiters, lengthDelimiters);
+                int startIndexDelimiters = 2;
+                int sizeEndStr = 2;
+                int lengthDelimiters = inputString.IndexOf(@"\n") - sizeEndStr;
+
+                string stringDelimiters = inputString.Substring(startIndexDelimiters, lengthDelimiters);
 
                 int count = 0;
-                while (true)
+                while (!(count == stringDelimiters.Length))
                 {
-                    if (numbers[count++] == '[')
+                    string delimiters = string.Empty;
+
+                    if (stringDelimiters[count++] == '[')
                     {
-                        while (!(numbers[count] == ']' && (numbers[count + 1] == '\n' || numbers[count + 1] == '[')))
+                        while (!(stringDelimiters[count] == ']' && ((count + 1) == stringDelimiters.Length || stringDelimiters[count + 1] == '[')))
                         {
-                            delimiters += numbers[count++];
+                            delimiters += stringDelimiters[count++];
                         }
                     }
-                    
-                    if (numbers[++count] == '\n')
-                    {
-                        break;
-                    }
 
-                    delimiters += ' ';
+                    listDelimiters.Add(delimiters);
+                    count++;
                 }
             }
-            else if (numbers.StartsWith("//"))
+            else if (inputString.StartsWith("//"))
             {
                 const int startIndexDelimiters = 2;
-                return numbers.Substring(startIndexDelimiters, 1);
+                return new List<string>() { inputString.Substring(startIndexDelimiters, 1) };
             }
 
-            return delimiters == string.Empty ? null : delimiters;
+            return listDelimiters;
         }
 
-        private string TruncateStringToNumbers(string numbers)
+        private string TruncateStringToNumbers(string cutInputString)
         {
-            int startIndexNumber = numbers.IndexOf('\n') + 1;
-            return numbers.Substring(startIndexNumber);
+            int sizeEndDelimiters = 2;
+            int startIndexNumber = cutInputString.IndexOf(@"\n") + sizeEndDelimiters;
+            return cutInputString.Substring(startIndexNumber);
         }
 
-        private IEnumerable<int> ConvertStringToNumbers(string numbers, string delimiters)
+        private IEnumerable<int> ConvertStringToNumbers(string cutInputString, List<string> listDelimiters)
         {
-            return numbers.Split(delimiters.Split(' ').Reverse().ToArray(), StringSplitOptions.None).Select(n => Convert.ToInt32(n));
+            //sorting from larger to smaller for a proper split
+            listDelimiters.Sort();
+            listDelimiters.Reverse();
+
+            var arrDelimiters = listDelimiters.ToArray();
+
+            return cutInputString.Split(arrDelimiters, StringSplitOptions.None).Select(n => Convert.ToInt32(n));
         }
     }
 }
