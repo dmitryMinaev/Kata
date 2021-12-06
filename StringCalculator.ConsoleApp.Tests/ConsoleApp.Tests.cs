@@ -1,8 +1,5 @@
 using NUnit.Framework;
 using Moq;
-using Moq.Protected;
-using Moq.Internals;
-using Moq.Language;
 using StringCalculator_ConsoleApp;
 using StringCalculator;
 
@@ -33,7 +30,7 @@ namespace ConsoleApp_Tests
         }
 
         [Test]
-        public void Run_WorkReadLine1()
+        public void Run_ProcessingReadLineOnce()
         {
             mockConsole.Setup(r => r.ReadLine())
                 .Returns("");
@@ -44,7 +41,7 @@ namespace ConsoleApp_Tests
         }
 
         [Test]
-        public void Run_WorkReadLine2()
+        public void Run_ProcessingReadLineTwice()
         {
             mockConsole.SetupSequence(r => r.ReadLine())
                 .Returns("1,2,3,4,5")
