@@ -12,9 +12,15 @@ namespace StringCalculator
             {
                 return 0;
             }
+
+            if (inputString.Contains(@"\n"))
+            {
+                inputString = inputString.Replace(@"\n", "\n");
+            }
+
             string formatInputString = TruncateInputString(inputString);
 
-            List<string> delimiters = FindDelimiters(inputString);
+            string[] delimiters = FindDelimiters(inputString);
 
             IEnumerable<int> numbers = ConvertStringToNumbers(formatInputString, delimiters);
 
@@ -23,49 +29,33 @@ namespace StringCalculator
             return numbers.Where(n => n < 1000).Sum();
         }
 
-        private List<string> FindDelimiters(string inputString)
+        private string[] FindDelimiters(string inputString)
         {
             if (inputString.StartsWith("//["))
             {
-                const int startIndexDelimiters = 2;
-                const int sizeEndStr = 2;
-                int lengthDelimiters = inputString.IndexOf(@"\n") - sizeEndStr;
-
-                string stringDelimiters = inputString.Substring(startIndexDelimiters, lengthDelimiters);
-
-                return CutStringToDelimiters(stringDelimiters);
+                string[] arrDelimiters = CutStringToDelimiters(inputString);
+                return arrDelimiters;
             }
             else if (inputString.StartsWith("//"))
             {
                 const int startIndexDelimiters = 2;
-                return new List<string>() { inputString.Substring(startIndexDelimiters, 1) };
+                return new string[] { inputString.Substring(startIndexDelimiters, 1) };
             }
 
-            return new List<string>() { ",", @"\n" };
+            return new string[] { ",", "\n" };
         }
 
-        private List<string> CutStringToDelimiters(string strDelimiters)
+        private string[] CutStringToDelimiters(string inputString)
         {
-            List<string> listDelimiters = new List<string>();
+            const int startIndexDelimiters = 3;
+            const int sizeEndStr = 4;
+            int lengthDelimiters = inputString.IndexOf('\n') - sizeEndStr;
 
-            int count = 0;
-            while (!(count == strDelimiters.Length))
-            {
-                string delimiters = string.Empty;
+            string stringDelimiters = inputString.Substring(startIndexDelimiters, lengthDelimiters);
 
-                if (strDelimiters[count++] == '[')
-                {
-                    while (!(strDelimiters[count] == ']' && ((count + 1) == strDelimiters.Length || strDelimiters[count + 1] == '[')))
-                    {
-                        delimiters += strDelimiters[count++];
-                    }
-                }
+            string[] arrDelimiters = stringDelimiters.Split("][");
 
-                listDelimiters.Add(delimiters);
-                count++;
-            }
-
-            return listDelimiters;
+            return arrDelimiters;
         }
 
         private void CheckQueryNegativeValues(IEnumerable<int> numbers)
@@ -82,22 +72,16 @@ namespace StringCalculator
         {
             if(inputString.StartsWith("//[") || inputString.StartsWith("//"))
             {
-                const int sizeEndDelimiters = 2;
-                int startIndexNumber = inputString.IndexOf(@"\n") + sizeEndDelimiters;
+                const int sizeEndDelimiters = 1;
+                int startIndexNumber = inputString.IndexOf('\n') + sizeEndDelimiters;
                 return inputString.Substring(startIndexNumber);
             }
 
             return inputString;
         }
 
-        private IEnumerable<int> ConvertStringToNumbers(string cutInputString, List<string> listDelimiters)
+        private IEnumerable<int> ConvertStringToNumbers(string cutInputString, string[] arrDelimiters)
         {
-            //sorting from larger to smaller for a proper split
-            listDelimiters.Sort();
-            listDelimiters.Reverse();
-
-            var arrDelimiters = listDelimiters.ToArray();
-
             return cutInputString.Split(arrDelimiters, StringSplitOptions.None).Select(n => Convert.ToInt32(n));
         }
     }
