@@ -43,7 +43,7 @@ namespace StringCalculator.Tests
         {
             var calculator = CreateDefaultCalculator();
 
-            int result = calculator.Add("1\n2, 1\n 6, 0");
+            int result = calculator.Add(@"1\n2, 1\n 6, 0");
             Assert.AreEqual(10, result);
         }
 
@@ -52,7 +52,7 @@ namespace StringCalculator.Tests
         {
             var calculator = CreateDefaultCalculator();
 
-            int result = calculator.Add("//;\n2;5;6;0");
+            int result = calculator.Add(@"//;\n2;5;6;0");
             Assert.AreEqual(13, result);
         }
 
@@ -61,7 +61,7 @@ namespace StringCalculator.Tests
         {
             var calculator = CreateDefaultCalculator();
 
-            TestDelegate actual = () => calculator.Add("-1\n-2, 1\n -6, 0");
+            TestDelegate actual = () => calculator.Add(@"-1\n-2, 1\n -6, 0");
             Exception ex = Assert.Throws<Exception>(actual);
 
             Assert.AreEqual("Negatives not allowed: -1 -2 -6", ex.Message);
@@ -81,7 +81,7 @@ namespace StringCalculator.Tests
         {
             var calculator = CreateDefaultCalculator();
 
-            int result = calculator.Add("//[***]\n1***2***3");
+            int result = calculator.Add(@"//[***]\n1***2***3");
             Assert.AreEqual(6, result);
         }
 
@@ -90,7 +90,7 @@ namespace StringCalculator.Tests
         {
             var calculator = CreateDefaultCalculator();
 
-            int result = calculator.Add("//[%][*]\n1*2%3");
+            int result = calculator.Add(@"//[%][*]\n1*2%3");
             Assert.AreEqual(6, result);
         }
 
@@ -99,8 +99,19 @@ namespace StringCalculator.Tests
         {
             var calculator = CreateDefaultCalculator();
 
-            int result = calculator.Add("//[***][%%]\n1%%2***3%%6");
+            int result = calculator.Add(@"//[***][%%]\n1%%2***3%%6");
             Assert.AreEqual(12, result);
+        }
+
+        [Test]
+        [TestCase(@"//[***][%%]\n1%%2***3%%6", 12)]
+        [TestCase(@"//[*][&]\n2*3&4", 9)]
+        public void Add_TransferToParametersTestMethod(string inputString, int resultTest)
+        {
+            var calculator = CreateDefaultCalculator();
+
+            int result = calculator.Add(inputString);
+            Assert.AreEqual(resultTest, result);
         }
     }
 }
